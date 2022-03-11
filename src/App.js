@@ -1,23 +1,43 @@
-import logo from './logo.svg';
+import React,{ useState, useEffect} from "react"
+import axios from "axios"
+
+
 import './App.css';
+import Home from "./pages/Home/Home"
+
+
 
 function App() {
+  const [jobs, setJobs] = useState([])
+
+        const fetchjobs = async () => {
+          const response = await axios.get("http://localhost:6564/api/Job/get-jobs");
+          setJobs(response.data);
+        }
+
+        useEffect(
+          () =>{
+              fetchjobs();
+          }, [jobs]
+        )
+
+        const deleteJob = async (id) => {
+          await axios.delete("http://localhost:6564/api/Job/delete-job?jobId="+id);
+          const newJobList = jobs.filter(job => 
+          {
+            return job.id !== id;
+          }
+        );
+        setJobs(newJobList);
+          
+        }
+
+        console.log(jobs);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+   
+    <div className="">     
+      <Home jobs = {jobs} deleteJob = {deleteJob} />
     </div>
   );
 }
